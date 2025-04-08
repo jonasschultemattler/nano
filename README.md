@@ -41,11 +41,13 @@ Space linear w.r.t. number distinct elements
 ### Flajolet-Martin’s algorithm
 
 Recall:\
-In a set of hash values of cardinality $2^l$ , we expect to see one hash $h(x_i)$ prefixed by $l$ zeroes.
+In a set of (uniformly distributed) hash values of cardinality $2^l$ , we expect to see one hash $h(x)$ prefixed by $l$ zeroes.
+
+(the probability of observing a binary encoded hash beginning with $k$ zeroes followed by a one is $1/2^(k+1)$)
 
 Algorithm:\
-map each element $x_i$ to a $q$-bits hash $h(x_i)$,\
-remember the maximum number $l = lb(h(x_i))$ of leading 0-bits seen in any $h(x_i)$,\
+map each element $x$ to a $q$-bits hash $h(x)$,\
+remember the maximum number $l = lb(h(x))$ of leading 0-bits seen in any $h(x)$,\
 finally, return the estimate $2^l$ 
 
 
@@ -62,7 +64,7 @@ Refinement:
 
 ### Evaluation
 
-Plot time, plot gap/solution quality
+Plot time, space, gap/solution quality
 
 
 
@@ -87,6 +89,6 @@ TODO implement...
 
 ### Evaluation
 
-Plot time, plot gap/solution quality
+Plot time, space, gap/solution quality
 
 

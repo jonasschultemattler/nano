@@ -49,10 +49,10 @@ Let $M$ be a multiset of uniformly distributed random numbers.
 #### Algorithm:
 
 - map each element $x$ to hash $h(x)$
-- remember the maximum number $l = lb(h(x))$ of leading 0-bits seen in any $h(x)$
+- remember the maximum number $l$ of leading 0-bits seen in any $h(x)$
 - estimate cardinality by $2^l$ 
 
-hash $h(x) \Rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
+hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
 
 TODO implement...
 

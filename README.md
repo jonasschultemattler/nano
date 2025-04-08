@@ -23,7 +23,7 @@ Test
 
 ## Counting distinct elements of a set
 
-**online** (stream)
+**online** setting (stream)
 
 
 ### Naive solution
@@ -34,30 +34,30 @@ TODO implement...
 
 Space linear w.r.t. number distinct elements
 
-
 -> approximate/probabilistic counting
 
 
 ### Flajolet-Martin’s algorithm
 
-##### Recall:
+#### Recall:
 
 In a set of (uniformly distributed) hash values of cardinality $2^l$ , we expect to see one hash $h(x)$ prefixed by $l$ zeroes
 (the probability of observing a binary encoded hash beginning with $k$ zeroes followed by a one is $1/2^{(k+1)}$ ).
 
-##### Algorithm:
+#### Algorithm:
 
 - map each element $x$ to a $q$-bits hash $h(x)$
 - remember the maximum number $l = lb(h(x))$ of leading 0-bits seen in any $h(x)$
-- return the estimate $2^l$ 
+- estimate cardinality by $2^l$ 
 
+$q \approx \log |S|$?
 
 TODO implement...
 
-TODO: use different hash functions
+TODO: use different hash functions vary bits $q$, hash-function-distributions
 
 
-### HyperLogLog Sketching
+### LogLog
 
 Refinement:
 

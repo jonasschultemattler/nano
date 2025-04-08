@@ -41,26 +41,37 @@ Space linear w.r.t. number distinct elements
 
 #### Recall:
 
-In a set of (uniformly distributed) hash values of cardinality $2^l$ , we expect to see one hash $h(x)$ prefixed by $l$ zeroes
-(the probability of observing a binary encoded hash beginning with $k$ zeroes followed by a one is $1/2^{(k+1)}$ ).
+Let $M$ be a multiset of uniformly distributed random numbers.
+ - the cardinality of $M$ can be estimated by the maximum number of leading zeros in the binary representation of each number in $M$
+ - if max leading zeros is $l$, one exepcts $2^l$ distinct elements
+(the probability of observing a binary encoded number beginning with $k$ zeroes followed by a one is $1/2^{(k+1)}$ )
 
 #### Algorithm:
 
-- map each element $x$ to a $q$-bits hash $h(x)$
+- map each element $x$ to hash $h(x)$
 - remember the maximum number $l = lb(h(x))$ of leading 0-bits seen in any $h(x)$
 - estimate cardinality by $2^l$ 
 
-$q \approx \log |S|$?
+hash $h(x) \Rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
 
 TODO implement...
 
-TODO: use different hash functions vary bits $q$, hash-function-distributions
+TODO: use different hash functions
 
 
-### LogLog
+### HyperLogLog
 
-Refinement:
+#### Observation:
+Large Variance
 
+#### Refinement:
+- split $M$ into subsets
+- estimate cardinalities of subsets
+- return mean
+
+smaller variance, $\log \log n$ space
+
+TODO implement...
 
 
 ### Evaluation

@@ -3,12 +3,21 @@
 
 ## Setup
 
+Requirements:
+
+ - gcc >= 12 or clang >=17
+ - cmake >= 3.20
+ - git
+
 Checkout
 ```
 git clone --recurse-submodules https://github.com/jonasschultemattler/nano.git
 ```
 
 Compile
+
+See https://docs.seqan.de/seqan3/main_user/setup.html for compiler setup. Then compile with
+
 ```
 mkdir build
 cd build
@@ -18,7 +27,7 @@ make
 
 Test
 ```
-./source/hello
+./source/count
 ```
 
 ## Counting distinct elements of a set
@@ -41,7 +50,7 @@ Space linear w.r.t. number distinct elements
 
 #### Recall:
 
-Let $M$ be a multiset of uniformly distributed random numbers.
+Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
  - the cardinality of $M$ can be estimated by the maximum number of leading zeros in the binary representation of each number in $M$
  - if max leading zeros is $l$, one exepcts $2^l$ distinct elements
 (the probability of observing a binary encoded number beginning with $k$ zeroes followed by a one is $1/2^{(k+1)}$ )
@@ -56,7 +65,7 @@ hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ d
 
 TODO implement...
 
-TODO: use different hash functions
+TODO: Test different hash functions
 
 
 ### HyperLogLog
@@ -65,9 +74,11 @@ TODO: use different hash functions
 Large Variance
 
 #### Refinement:
-- split $M$ into subsets
+- split $\mathcal{M}$ into subsets
 - estimate cardinalities of subsets
 - return mean
+
+The normalized version of the harmonic mean is the estimate $E:=\frac{\alpha_m m^2}{\sum_{j=1}^m 2^{-M(j)}}$.
 
 smaller variance, $\log \log n$ space
 

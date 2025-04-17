@@ -85,7 +85,8 @@ Large Variance
 - estimate cardinalities of subsets
 - return mean
 
-The normalized version of the harmonic mean is the estimate $E:=\frac{\alpha_m m^2}{\sum_{j=1}^m 2^{-M(j)}}$.
+The normalized version of the harmonic mean is the estimate
+$$E:=\frac{\alpha_m m^2}{\sum_{j=1}^m 2^{-M(j)}}$$.
 
 smaller variance, $\log \log n$ space
 
@@ -108,8 +109,9 @@ $J(A,B) := \frac{|A \cap B|}{|A \cup B|}$.
 
 ### MinHashing
 
-Let MinHash $h'(A) = \min\{h(x) \mid x \in A\}$ and $J'_h(A,B) := \begin{cases}1, & \text{if} h'(A) = h'(B)\\ 0 \text{tow.}\end{cases}$, then
-$E[J'_h(A,B)] = J(A,B)$
+Let MinHash $h'(A) = \min\{h(x) \mid x \in A\}$ and
+$$J'_h(A,B) := \begin{cases}1, & \text{if} h'(A) = h'(B)\\ 0 \text{tow.}\end{cases}$$,
+then $E[J'_h(A,B)] = J(A,B)$.
 
 TODO implement...
 

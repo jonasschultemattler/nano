@@ -7,22 +7,40 @@
 // #include <murmurhash.h>
 
 
+
 struct my_traits:seqan3::sequence_file_input_default_traits_dna {
     using sequence_alphabet = seqan3::dna4;
 };
 
 
-static inline constexpr uint64_t hash_1(uint64_t kmer) {
-    return kmer;
+
+static inline constexpr uint8_t countleadingzeros(const uint64_t x) {
+    return __builtin_clzll(x);
 }
 
-static inline constexpr uint64_t hash_2(uint64_t kmer) {
+static inline constexpr uint8_t leading_zeros(const uint64_t hash, const uint8_t precision) {
+    const uint64_t mask = (1ULL << precision) - 1u;
+    const uint8_t rank = std::countl_zero((hash << precision) | mask) + 1;
+    return rank;
+}
+
+static inline constexpr uint8_t register_index(const uint64_t hash, const uint8_t precision) {
+    return hash >> (64 - precision);
+}
+
+static inline constexpr uint64_t hash_1(const uint64_t x) {
+    return x;
+}
+
+static inline constexpr uint64_t hash_2(const uint64_t x) {
     std::hash<uint64_t> hasher;
-    return hasher(kmer);
+    return hasher(x);
 }
 
-static inline constexpr uint8_t ls1(uint64_t x) {
-    return __builtin_clzll(x)-1;
+static inline uint64_t hash_3(const uint64_t x) {
+    __uint128_t result = x;
+    result *= 0x9E3779B97F4A7C15ULL;
+    return static_cast<uint64_t>(result) ^ static_cast<uint64_t>(result >> 64);
 }
 
 
@@ -47,7 +65,7 @@ uint64_t naive_couting(const std::filesystem::path &filepath, uint8_t const k)
 }
 
 
-uint64_t flajolet_martin(const std::filesystem::path &filepath, uint8_t const k)
+uint64_t flajolet_martin(const std::filesystem::path &filepath, uint8_t const k, uint64_t (*hashFunc)(uint64_t))
 {
     // TODO: implement Flajolet-Martin’s algorithm here
     auto stream = seqan3::sequence_file_input<my_traits>{filepath};
@@ -57,62 +75,74 @@ uint64_t flajolet_martin(const std::filesystem::path &filepath, uint8_t const k)
 
     for(auto & record : stream) {
         for(auto && kmer : record.sequence() | kmer_view) {
-            uint64_t hash = hash_2(kmer);
-            l = std::max(l, ls1(hash));
+            uint64_t hash = hashFunc(kmer);
+            uint8_t zeros = countleadingzeros(hash);
+            l = std::max(l, zeros);
         }
     }
+    // std::cout << +l << "\n";
 
     return 1 << l;
 }
 
 
-uint64_t hyperloglog(const std::filesystem::path &filepath, uint8_t const k)
+uint64_t hyperloglog(const std::filesystem::path &filepath, uint8_t const k, uint64_t (*hashFunc)(uint64_t))
 {
     // TODO: implement HyperLogLog here
     auto stream = seqan3::sequence_file_input<my_traits>{filepath};
     auto kmer_view = seqan3::views::kmer_hash(seqan3::ungapped{k});
 
-    const uint8_t b = 6;
-    const uint64_t m = (1<<b);
-    const double alpha = 0.709;
+    const uint8_t precision = 6u;
+    const uint64_t m = (1<<precision);
+    // const double alpha = 0.679;
+    const double alpha = 0.7213 / (1.0 + 1.079 / m);
 
-    std::vector<uint8_t> M;
-    for(int i=0; i < m; i++)
-        M.push_back(0);
+    uint8_t registers[m];
+    std::memset(registers, 0, m*sizeof(uint8_t));
 
-    uint8_t j = 0;
-    uint64_t w;
     for(auto & record : stream) {
         for(auto && kmer : record.sequence() | kmer_view) {
-            uint64_t hash = hash_2(kmer);
-            w = hash >> (64-b);
-            j = hash << b;
-            M[j] = std::max(M[j], ls1(w));
+            uint64_t hash = hashFunc(kmer);
+            const uint8_t index = register_index(hash, precision);
+            const uint8_t zeros = leading_zeros(hash, precision) + 1;
+            registers[index] = std::max(registers[index], zeros);
         }
     }
-    double Z = 0.0;
-    for(j=0; j < m; j++) {
-        Z += 1.0 / (1 << M[j]);
+    // for(uint64_t j=0; j < m; j++) {
+    //     std::cout << +registers[j] << " ";
+    // }
+    double sum = 0.0;
+    for(uint64_t j=0; j < m; ++j) {
+        sum += 1.0 / (1ULL << registers[j]);
     }
-    return alpha*m*m/Z;
+
+    return alpha*m*m/sum;
 }
 
 
 int main(int argc, char** argv)
 {
     uint8_t const k = 31;
-    // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/example_dna.fa.gz";
+    const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/celegans.k31.unitigs.fa.ust.fa.gz";
     // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/human.k31.unitigs.fa.ust.fa.gz";
-    const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz";
+    // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz";
 
-    uint64_t kmers = naive_couting(file, k);
-    std::cout << "Hashtable: " << kmers << '\n';
+    uint64_t count_ht = naive_couting(file, k);
+    std::cout << "Hashtable: " << count_ht << '\n';
 
-    kmers = flajolet_martin(file, k);
-    std::cout << "Flajolet Martin: " << kmers << '\n';
+    uint64_t count_fm = flajolet_martin(file, k, hash_3);
+    uint64_t diff;
+    if(count_fm > count_ht)
+        diff = count_fm - count_ht;
+    else
+        diff = count_ht - count_fm;
+    std::cout << "Flajolet Martin: " << count_fm << " off by " << (double) diff/count_ht*100 << "%\n";
 
-    kmers = hyperloglog(file, k);
-    std::cout << "HyperLogLog: " << kmers << '\n';
+    uint64_t count_hll = hyperloglog(file, k, hash_3);
+    if(count_hll > count_ht)
+        diff = count_hll - count_ht;
+    else
+        diff = count_ht - count_hll;
+    std::cout << "HyperLogLog: " << count_hll << " off by " << (double) diff/count_ht*100 << "%\n";
 
 }
-

@@ -105,8 +105,19 @@ TODO: Test different hash functions
 
 ## Set Similarity
 
-(Dis-)similarity of two sets $A$ and $B$ can be measured by Jaccard similarity
+(Dis-)similarity of two sets $A$ and $B$ can be measured with Jaccard similarity
 $J(A,B) := \frac{|A \cap B|}{|A \cup B|}$.
+
+
+### Naive Algorithm
+
+Hashmap or bitvector
+
+TODO implement...
+
+Space linear w.r.t. number distinct elements
+
+Comparing $n$ sets requires $O(n^2)$ pairwise comarisons.
 
 
 ### MinHashing
@@ -134,5 +145,16 @@ TODO implement...
 ### Evaluation
 
 Plot time, space, gap/solution quality
+
+
+
+## Take Aways
+
+- Certain tasks on massive data as in molecular biology require data sketching.
+- With a bit of randomness measures of distinct elements in a set become tractable for big data.
+- Especially, relying proximity measures that require pairwise comparisons.
+
+
+
 
 

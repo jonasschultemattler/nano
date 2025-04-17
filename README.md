@@ -30,6 +30,15 @@ Test
 ./source/count
 ```
 
+## Sketching
+
+A \emph{data sketch} of data $X$ is the output of a (randomized) function $f$ s.t.:
+ - $f(x) \subseteq o(x)$
+ - $f(x)$ perserves some properties of $x$ e.g. approximation of the number of distinct elements
+ <!-- - it can be updated efficiently -->
+ - preserves some similarity measure
+
+
 ## Counting distinct elements of a set
 
 **online** setting (stream)
@@ -65,8 +74,6 @@ hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ d
 
 TODO implement...
 
-TODO: Test different hash functions
-
 
 ### HyperLogLog
 
@@ -82,27 +89,35 @@ The normalized version of the harmonic mean is the estimate $E:=\frac{\alpha_m m
 
 smaller variance, $\log \log n$ space
 
+
 TODO implement...
 
 
 ### Evaluation
 
-Plot time, space, gap/solution quality
+TODO: Plot time, space, gap/solution quality
 
+TODO: Test different hash functions
 
 
 ## Set Similarity
 
-Jaccard similarity $J(A,B)$ of two sets $A$ and $B$: 
+(Dis-)similarity of two sets $A$ and $B$ can be measured by Jaccard similarity
+$J(A,B) := \frac{|A \cap B|}{|A \cup B|}$.
 
 
-### Exact
+### MinHashing
+
+Let MinHash $h'(A) = \min\{h(x) \mid x \in A\}$ and $J'_h(A,B) := \begin{cases}1, & \text{if} h'(A) = h'(B)\\ 0 \text{tow.}\end{cases}$, then
+$E[J'_h(A,B)] = J(A,B)$
 
 TODO implement...
+
 
 ### FracMinHashing
 
 TODO implement...
+
 
 ### HyperLogLog
 

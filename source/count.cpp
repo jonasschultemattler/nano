@@ -7,7 +7,6 @@
 // #include <murmurhash.h>
 
 
-
 struct my_traits:seqan3::sequence_file_input_default_traits_dna {
     using sequence_alphabet = seqan3::dna4;
 };
@@ -37,7 +36,7 @@ static inline constexpr uint64_t hash_2(const uint64_t x) {
     return hasher(x);
 }
 
-static inline uint64_t hash_3(const uint64_t x) {
+static inline constexpr uint64_t hash_3(const uint64_t x) {
     __uint128_t result = x;
     result *= 0x9E3779B97F4A7C15ULL;
     return static_cast<uint64_t>(result) ^ static_cast<uint64_t>(result >> 64);
@@ -123,9 +122,9 @@ uint64_t hyperloglog(const std::filesystem::path &filepath, uint8_t const k, uin
 int main(int argc, char** argv)
 {
     uint8_t const k = 31;
-    const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/celegans.k31.unitigs.fa.ust.fa.gz";
+    // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/celegans.k31.unitigs.fa.ust.fa.gz";
     // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/human.k31.unitigs.fa.ust.fa.gz";
-    // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz";
+    const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz";
 
     uint64_t count_ht = naive_couting(file, k);
     std::cout << "Hashtable: " << count_ht << '\n';

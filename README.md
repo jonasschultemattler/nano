@@ -111,9 +111,9 @@ $J(A,B) := \frac{|A \cap B|}{|A \cup B|}$.
 
 ### MinHashing
 
-Let MinHash $h'(A) = \min\{h(x) \mid x \in A\}$ and
+Let MinHash $h'(A) = \min \{ h(x) \mid x \in A \}$ and
 ```math
-J'_h(A,B) := \begin{cases}1, & \text{if} h'(A) = h'(B)\\ 0 \text{tow.}\end{cases},
+J'_h(A,B) := \begin{cases}1, & \text{if } h'(A) = h'(B)\\ 0 & \text{otw.}\end{cases},
 ```
 then $E[J'_h(A,B)] = J(A,B)$.
 

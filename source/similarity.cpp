@@ -12,6 +12,7 @@ const std::vector<std::filesystem::path> files = {
         "/Users/adm_js4718fu/datasets/unitigs/ecoli2_k31_ust.fa.gz",
         "/Users/adm_js4718fu/datasets/unitigs/ecoli4_k31_ust.fa.gz"};
 const int n = 3;
+const uint8_t k = 31;
 
 
 struct my_traits:seqan3::sequence_file_input_default_traits_dna {
@@ -49,8 +50,8 @@ static inline constexpr uint64_t hash_3(const uint64_t x) {
 }
 
 
-size_t set_intersection_size(const std::unordered_set<uint64_t> &set_a,
-                             const std::unordered_set<uint64_t> &set_b)
+static size_t set_intersection_size(const std::unordered_set<uint64_t> &set_a,
+                                    const std::unordered_set<uint64_t> &set_b)
 {
     if(set_b.size() < set_a.size()) {
         return set_intersection_size(set_b, set_a);
@@ -63,8 +64,8 @@ size_t set_intersection_size(const std::unordered_set<uint64_t> &set_a,
     return cardinality;
 }
 
-size_t set_union_size(const std::unordered_set<uint64_t> &set_a,
-                      const std::unordered_set<uint64_t> &set_b)
+static size_t set_union_size(const std::unordered_set<uint64_t> &set_a,
+                             const std::unordered_set<uint64_t> &set_b)
 {
     std::unordered_set<uint64_t> set_union;
     set_union.insert(set_a.begin(), set_a.end());
@@ -73,7 +74,7 @@ size_t set_union_size(const std::unordered_set<uint64_t> &set_a,
 }
 
 
-void fill_ht(const std::filesystem::path &filepath, uint8_t const k,
+void fill_ht(const std::filesystem::path &filepath,
              std::unordered_set<uint64_t> &kmerset)
 {
     // stream over k-mers in DNA file
@@ -96,34 +97,33 @@ void print_matrix(double matrix[n][n])
     }
 }
 
-
-double jaccard_similarity(const std::filesystem::path filepath_a,
-                          const std::filesystem::path filepath_b, uint8_t const k)
+void similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n],
+                  double (*similarityFunc)(const std::filesystem::path&, const std::filesystem::path&))
 {
-    // TODO: implement naive jaccard here
-    std::unordered_set<uint64_t> kmerset_a;
-    std::unordered_set<uint64_t> kmerset_b;
-    fill_ht(filepath_a, k, kmerset_a);
-    fill_ht(filepath_b, k, kmerset_b);
-
-    return (double) set_intersection_size(kmerset_a, kmerset_b)/set_union_size(kmerset_a, kmerset_b);
-}
-
-
-void jaccard_similarities(const std::vector<std::filesystem::path> &filepaths, uint8_t const k, double similarities[n][n])
-{
-    // TODO: implement naive jaccard here
     for(int i = 0; i < n; i++) {
-        similarities[i][i] = 0;
+        matrix[i][i] = 0;
         for(int j = i+1; j < n; j++) {
-            double similarity = jaccard_similarity(filepaths[i], filepaths[j], k);
-            similarities[i][j] = similarities[j][i] = similarity;
+            matrix[i][j] = matrix[j][i] = similarityFunc(filepaths[i], filepaths[j]);
         }
     }
 }
 
 
-uint64_t minHashing(const std::filesystem::path &filepath, uint8_t const k, uint64_t (*hashFunc)(uint64_t))
+double jaccard_similarity(const std::filesystem::path &filepath_a,
+                          const std::filesystem::path &filepath_b)
+{
+    // TODO: implement naive jaccard here
+    std::unordered_set<uint64_t> kmerset_a;
+    std::unordered_set<uint64_t> kmerset_b;
+    fill_ht(filepath_a, kmerset_a);
+    fill_ht(filepath_b, kmerset_b);
+
+    return (double) set_intersection_size(kmerset_a, kmerset_b)/set_union_size(kmerset_a, kmerset_b);
+}
+
+
+uint64_t minHash_similarity(const std::filesystem::path &filepath_a,
+                            const std::filesystem::path &filepath_b)
 {
     // TODO: implement MinHashing here
 
@@ -131,7 +131,8 @@ uint64_t minHashing(const std::filesystem::path &filepath, uint8_t const k, uint
 }
 
 
-uint64_t fracMinHashing(const std::filesystem::path &filepath, uint8_t const k, uint64_t (*hashFunc)(uint64_t))
+uint64_t fracMinHash_similarity(const std::filesystem::path &filepath_a,
+                                const std::filesystem::path &filepath_b)
 {
     // TODO: implement FracMinHashing here
 
@@ -141,10 +142,8 @@ uint64_t fracMinHashing(const std::filesystem::path &filepath, uint8_t const k, 
 
 int main(int argc, char** argv)
 {
-    uint8_t const k = 31;
-    
-    double similarities[n][n];
-    jaccard_similarities(files, k, similarities);
-    print_matrix(similarities);
+    double matrix[n][n];
+    similarities(files, matrix, jaccard_similarity);
+    print_matrix(matrix);
 
 }

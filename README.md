@@ -124,21 +124,28 @@ Comparing $n$ sets requires $O(n^2)$ pairwise comarisons.
 
 ### MinHashing
 
-Let MinHash $h'(A) = \min \{ h(x) \mid x \in A \}$ and
+Let MinHash $h_{\min}(A) = \min \{ h(x) \mid x \in A \}$ and
 ```math
-J'_h(A,B) := \begin{cases}1, & \text{if } h'(A) = h'(B)\\ 0 & \text{otw.}\end{cases},
+J_h(A,B) := \begin{cases}1, & \text{if } h_{\min}(A) = h_{\min}(B)\\ 0 & \text{otw.}\end{cases},
 ```
-then $E[J'_h(A,B)] = J(A,B)$.
+then $E[J_h(A,B)] = J(A,B)$.
+
+Algorithm:
+
+- sample $h_{\min}$ for $k$ different hash functions
+- let $l$ be the number of hash functions s.t. $h_{\min}(A) = h_{\min}(B)$
+- estimate $J(A,B)$ by $l/k$
 
 TODO implement...
+
+For any $\epsilon > 0$ there is a $k \in O(1/\epsilon^2)$ s.t. the expected error is at most $\epsilon$.
+
+How many hash functions do you need to have an expected error at most $.05$?
 
 
 ### FracMinHashing
 
-TODO implement...
-
-
-### HyperLogLog
+<!-- Let FracMinHash $h_{frac}(A) = \min \{ s h(x) \mid x \in A \}$ for $s \in [0,1]$. -->
 
 TODO implement...
 

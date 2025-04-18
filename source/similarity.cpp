@@ -49,6 +49,9 @@ static inline constexpr uint64_t hash_3(const uint64_t x) {
     return static_cast<uint64_t>(result) ^ static_cast<uint64_t>(result >> 64);
 }
 
+const std::vector<uint64_t (*)(const uint64_t)> hashfunctions = {hash_2, hash_3};
+const int number_hf = 2;
+
 
 static size_t set_intersection_size(const std::unordered_set<uint64_t> &set_a,
                                     const std::unordered_set<uint64_t> &set_b)
@@ -87,8 +90,7 @@ void fill_ht(const std::filesystem::path &filepath,
     }
 }
 
-void print_matrix(double matrix[n][n])
-{
+void print_matrix(double matrix[n][n]) {
     for(int i = 0; i < n; i++) {
         for(int j = 0; j < n; j++) {
             std::cout << matrix[i][j] << " ";
@@ -122,17 +124,43 @@ double jaccard_similarity(const std::filesystem::path &filepath_a,
 }
 
 
-uint64_t minHash_similarity(const std::filesystem::path &filepath_a,
-                            const std::filesystem::path &filepath_b)
+double minHash_similarity(const std::filesystem::path &filepath_a,
+                          const std::filesystem::path &filepath_b)
 {
     // TODO: implement MinHashing here
+    uint64_t minhashs_a[number_hf];
+    for(int i = 0; i < number_hf; i++)
+        minhashs_a[i] = UINT_MAX;
+    auto fin_a = seqan3::sequence_file_input<my_traits>{filepath_a};
+    auto kmer_view = seqan3::views::kmer_hash(seqan3::ungapped{k});
+    for(auto & record : fin_a) {
+        for(auto && kmer : record.sequence() | kmer_view) {
+            for(int i = 0; i < number_hf; i++) {
+                minhashs_a[i] = std::min(hashfunctions[i](kmer), minhashs_a[i]);
+            }
+        }
+    }
+    uint64_t minhashs_b[number_hf];
+    for(int i = 0; i < number_hf; i++)
+        minhashs_b[i] = UINT_MAX;
+    auto fin_b = seqan3::sequence_file_input<my_traits>{filepath_b};
+    for(auto & record : fin_b) {
+        for(auto && kmer : record.sequence() | kmer_view) {
+            for(int i = 0; i < number_hf; i++) {
+                minhashs_b[i] = std::min(hashfunctions[i](kmer), minhashs_b[i]);
+            }
+        }
+    }
+    int y = 0;
+    for(int i = 0; i < number_hf; i++)
+        y += minhashs_a[i] == minhashs_b[i];
 
-    return 0;
+    return y/number_hf;
 }
 
 
-uint64_t fracMinHash_similarity(const std::filesystem::path &filepath_a,
-                                const std::filesystem::path &filepath_b)
+double fracMinHash_similarity(const std::filesystem::path &filepath_a,
+                              const std::filesystem::path &filepath_b)
 {
     // TODO: implement FracMinHashing here
 
@@ -146,4 +174,6 @@ int main(int argc, char** argv)
     similarities(files, matrix, jaccard_similarity);
     print_matrix(matrix);
 
+    similarities(files, matrix, minHash_similarity);
+    print_matrix(matrix);
 }

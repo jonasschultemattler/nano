@@ -124,7 +124,7 @@ Comparing $n$ sets requires $O(n^2)$ pairwise comarisons.
 
 ### MinHashing
 
-Let MinHash $h_{\min}(A) = \min \{ h(x) \mid x \in A \}$ and
+Let MinHash $h_{\min}(A) = \min \{h(x) \mid x \in A\}$ and
 ```math
 J_h(A,B) := \begin{cases}1, & \text{if } h_{\min}(A) = h_{\min}(B)\\ 0 & \text{otw.}\end{cases},
 ```
@@ -132,7 +132,7 @@ then $E[J_h(A,B)] = J(A,B)$.
 
 Algorithm:
 
-- sample $h_{\min}$ for $k$ different hash functions
+- sample $h_{\min}$ from $k$ different hash functions
 - let $l$ be the number of hash functions s.t. $h_{\min}(A) = h_{\min}(B)$
 - estimate $J(A,B)$ by $l/k$
 

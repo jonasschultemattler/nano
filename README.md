@@ -60,7 +60,7 @@ Space linear w.r.t. number distinct elements
 #### Recall:
 
 Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
- - the cardinality of $\mathcal{M}$ can be estimated by the maximum number of leading zeros in the binary representation of each number in $M$
+ - the cardinality of $\mathcal{M}$ can be estimated by the maximum number of leading zeros in the binary representation of each number in $\mathcal{M}$
  - if max leading zeros is $l$, one exepcts $2^l$ distinct elements
 (the probability of observing a binary encoded number beginning with $k$ zeroes followed by a one is $1/2^{(k+1)}$ )
 
@@ -154,7 +154,7 @@ Plot time, space, gap/solution quality
 
 - Certain tasks on massive data as in molecular biology require data sketching.
 - With a bit of randomness measures of distinct elements in a set become tractable for big data.
-- Especially, relying proximity measures that require pairwise comparisons.
+- Especially, relying proximity measures that require pairwise comparison.
 
 
 

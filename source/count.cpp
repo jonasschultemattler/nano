@@ -47,20 +47,14 @@ uint64_t naive_couting(const std::filesystem::path &filepath, uint8_t const k)
 {
     // TODO: implement naive counting here
     std::unordered_set<uint64_t> kmerset;
-    uint64_t distinct_kmers = 0;
-
-    // stream over k-mers in DNA file
     auto stream = seqan3::sequence_file_input<my_traits>{filepath};
     auto kmer_view = seqan3::views::kmer_hash(seqan3::ungapped{k});
     for(auto & record : stream) {
         for(auto && kmer : record.sequence() | kmer_view) {
-            if(kmerset.find(kmer) == kmerset.end()) {
-                kmerset.insert(kmer);
-                distinct_kmers++;
-            }
+            kmerset.insert(kmer);
         }
     }
-    return distinct_kmers;
+    return kmerset.size();
 }
 
 

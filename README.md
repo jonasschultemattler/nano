@@ -70,12 +70,16 @@ Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
 - remember the maximum number $l$ of leading 0-bits seen in any $h(x)$,
 - estimate cardinality by $2^l$.
 
-TODO implement flajolet_martin() in count.cpp
+TODO:
+- Implement flajolet_martin() in count.cpp.
+- Test flajolet_martin() for different hash functions.
+- Compare run time, space consumption and accuracy to exact solution.
 
-Hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
 
-#### Observation:
-Large Variance
+#### Observations:
+
+ - Hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
+ - Large Variance
 
 
 ### HyperLogLog
@@ -91,17 +95,17 @@ E:=\frac{\alpha_m m^2}{\sum_{j=1}^m 2^{-M(j)}}.
 ```
 for $m$ subsets $M(i)$ and normalization constant $\alpha_m \approx 0.7$.
 
-TODO implement hyperloglog() in count.cpp
+TODO
+- Implement hyperloglog() in count.cpp.
+- Test hyperloglog() for different hash functions.
+- Compare run time, space consumption and accuracy to Flajolet-Martin.
 
-It has smaller variance and requires $O(\log \log n)$ space.
 
+#### Observations:
 
+- Smaller variance
+- Less space concumption: $O(\log \log n)$
 
-### Evaluation
-
-TODO: Plot time, space, gap/solution quality
-
-TODO: Test different hash functions
 
 
 ## Set Similarity

@@ -32,9 +32,9 @@ Test
 
 A *data sketch* of data $X$ is the output of a (randomized) function $f$ s.t.:
  - $|f(X)| \subseteq o(|X|)$
- - $f(X)$ perserves some properties of $X$ e.g. approximation of the number of distinct elements
- - $f(X)$ preserves certain similarity measures e.g. number of shared elements
- - allows to be updated efficiently
+ - $f$ perserves some properties of $X$ e.g. approximation of the number of distinct elements
+ - $f$ preserves certain similarity measures e.g. number of shared elements
+ - $f(X)$ allows to be updated efficiently
 
 
 ## Counting distinct elements of a set
@@ -133,7 +133,7 @@ Comparing $n$ sets requires $O(n^2)$ pairwise comarisons.
 
 ### MinHashing
 
-Let MinHash $h_{\min}(A) = \min \{h(x) \mid x \in A\}$ and
+Let MinHash $h_{\min}(A) = \min \{ h(x) \mid x \in A \}$ and
 ```math
 J_h(A,B) := \begin{cases}1, & \text{if } h_{\min}(A) = h_{\min}(B)\\ 0 & \text{otw.}\end{cases},
 ```

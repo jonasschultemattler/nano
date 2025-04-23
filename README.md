@@ -50,7 +50,11 @@ TODO implement naive_couting() in count.cpp
 
 <!-- TODO plot space consumption/number of k-mers in plot.py -->
 
-Space linear w.r.t. number distinct elements
+
+#### Observation:
+
+- Space consumption linear w.r.t. number distinct elements
+- impractical for big data
 
 -> approximate/probabilistic counting
 

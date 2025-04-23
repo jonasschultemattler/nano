@@ -144,11 +144,20 @@ Then $E[J_h(A,B)] = J(A,B)$.
 
 Algorithm:
 
-- sample $h_{\min}$ from $k$ different hash functions
-- let $l$ be the number of hash functions with $h_{\min}(A) = h_{\min}(B)$
+- sample $h_{\min}$ from $k$ random permutations of $h$
+- let $l$ be the number of permutated hash functions with $h_{\min}(A) = h_{\min}(B)$
 - estimate $J(A,B)$ by $l/k$
 
-TODO implement...
+A random permutation of $h$ can be e.g.:
+```math
+h_i(x) = a_i x + b_i \mod p
+```
+for prime number $p$ and random $a_i,b_i \in \lbrace 1,\ldots,p\rbrace$.
+
+TODO:
+- implement...
+- Compare run time, space consumption and accuracy to exact solution. Use todo.py
+- Test the quality and run time of MinHash for different (number of) hash functions
 
 For any $\epsilon > 0$ there is a $k \in O(1/\epsilon^2)$ s.t. the expected error is at most $\epsilon$.
 
@@ -162,13 +171,14 @@ Let $h: \Omega \Rightarrow [0,H]$ be a hash function for $H \in \mathbb{N}$ and 
 FRAC_{s}(A) := \min \{ h(x) \mid x \in A \land h(x) \leq H s \}.
 ```
 
-TODO implement...
-
+TODO
+- implement...
+- plot time, space, gap/solution quality of (Frac)MinHashing
 
 
 ### Evaluation
 
-Plot time, space, gap/solution quality
+
 
 
 

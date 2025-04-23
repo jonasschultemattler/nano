@@ -14,9 +14,7 @@ Checkout
 git clone --recurse-submodules https://github.com/jonasschultemattler/nano.git
 ```
 
-Compile
-
-See https://docs.seqan.de/seqan3/main_user/setup.html for compiler setup. Then compile with
+See https://docs.seqan.de/seqan3/main_user/setup.html for compiler setup. Compile with
 
 ```
 mkdir build
@@ -35,20 +33,22 @@ Test
 A *data sketch* of data $X$ is the output of a (randomized) function $f$ s.t.:
  - $|f(X)| \subseteq o(|X|)$
  - $f(X)$ perserves some properties of $X$ e.g. approximation of the number of distinct elements
- <!-- - it can be updated efficiently -->
- - preserves some similarity measure
+ - $f(X)$ preserves certain similarity measures e.g. number of shared elements
+ - allows to be updated efficiently
 
 
 ## Counting distinct elements of a set
 
-**online** setting (stream)
+In an **online** setting (stream)
 
 
 ### Naive solution
 
-Hashmap or bitvector
+Using a Hashmap or a Bitvector
 
-TODO implement...
+TODO implement naive_couting() in count.cpp
+
+<!-- TODO plot space consumption/number of k-mers in plot.py -->
 
 Space linear w.r.t. number distinct elements
 
@@ -60,40 +60,41 @@ Space linear w.r.t. number distinct elements
 #### Recall:
 
 Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
- - the cardinality of $\mathcal{M}$ can be estimated by the maximum number of leading zeros in the binary representation of each number in $\mathcal{M}$
- - if max leading zeros is $l$, one exepcts $2^l$ distinct elements
-(the probability of observing a binary encoded number beginning with $k$ zeroes followed by a one is $1/2^{(k+1)}$ )
+ - The cardinality of $\mathcal{M}$ can be estimated by the maximum number of leading zeros in the binary representation of each number in $\mathcal{M}$.
+ - If max leading zeros is $l$, one exepcts $2^l$ distinct elements
+(the probability of observing a binary encoded number beginning with $k$ zeroes followed by a one is $1/2^{(k+1)}$ ).
 
 #### Algorithm:
 
-- map each element $x$ to hash $h(x)$
-- remember the maximum number $l$ of leading 0-bits seen in any $h(x)$
-- estimate cardinality by $2^l$ 
+- Map each element $x$ to hash $h(x)$,
+- remember the maximum number $l$ of leading 0-bits seen in any $h(x)$,
+- estimate cardinality by $2^l$.
 
-hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
+TODO implement flajolet_martin() in count.cpp
 
-TODO implement...
-
-
-### HyperLogLog
+Hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
 
 #### Observation:
 Large Variance
 
+
+### HyperLogLog
+
 #### Refinement:
-- split $\mathcal{M}$ into $m$ subsets
-- estimate cardinalities of subsets
-- return mean
+- split $\mathcal{M}$ into $m$ subsets,
+- estimate cardinalities of subsets,
+- return mean.
 
 The normalized version of the harmonic mean is the estimate
 ```math
 E:=\frac{\alpha_m m^2}{\sum_{j=1}^m 2^{-M(j)}}.
 ```
+for $m$ subsets $M(i)$ and normalization constant $\alpha_m \approx 0.7$.
 
-It has smaller variance and requires $\log \log n$ space.
+TODO implement hyperloglog() in count.cpp
 
+It has smaller variance and requires $O(\log \log n)$ space.
 
-TODO implement...
 
 
 ### Evaluation
@@ -128,12 +129,12 @@ Let MinHash $h_{\min}(A) = \min \{h(x) \mid x \in A\}$ and
 ```math
 J_h(A,B) := \begin{cases}1, & \text{if } h_{\min}(A) = h_{\min}(B)\\ 0 & \text{otw.}\end{cases},
 ```
-then $E[J_h(A,B)] = J(A,B)$.
+Then $E[J_h(A,B)] = J(A,B)$.
 
 Algorithm:
 
 - sample $h_{\min}$ from $k$ different hash functions
-- let $l$ be the number of hash functions s.t. $h_{\min}(A) = h_{\min}(B)$
+- let $l$ be the number of hash functions with $h_{\min}(A) = h_{\min}(B)$
 - estimate $J(A,B)$ by $l/k$
 
 TODO implement...
@@ -159,9 +160,9 @@ Plot time, space, gap/solution quality
 
 ## Take Aways
 
-- Certain tasks on massive data as in molecular biology require data sketching.
-- With a bit of randomness measures of distinct elements in a set become tractable for big data.
-- Especially, relying proximity measures that require pairwise comparison.
+- Certain tasks for massive data as in molecular biology require data sketching.
+- With a bit of randomness, measures for distinct elements in a set become tractable for big data.
+- Especially, relying proximity measures that require pairwise comparisons.
 
 
 

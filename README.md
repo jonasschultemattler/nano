@@ -129,6 +129,9 @@ TODO implement...
 Space linear w.r.t. total number of distinct elements
 
 Comparing $n$ sets requires $O(n^2)$ pairwise comarisons.
+It can be sped up by keeping the hashmaps of k-mer sets of size $O(m)$ in memory at the cost of or $O(n m)$ space.
+
+Impractical for big data.
 
 
 ### MinHashing

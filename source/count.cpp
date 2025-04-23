@@ -43,7 +43,7 @@ uint64_t naive_couting(const std::filesystem::path &filepath)
 }
 
 
-uint64_t flajolet_martin(const std::filesystem::path &filepath, uint64_t (*hashFunc)(uint64_t))
+uint64_t flajolet_martin(const std::filesystem::path &filepath, uint64_t (*hashFunc)(uint64_t)=hash_3)
 {
     // TODO: implement Flajolet-Martin’s algorithm here
     auto stream = seqan3::sequence_file_input<my_traits>{filepath};
@@ -63,7 +63,7 @@ uint64_t flajolet_martin(const std::filesystem::path &filepath, uint64_t (*hashF
 }
 
 
-uint64_t hyperloglog(const std::filesystem::path &filepath, uint64_t (*hashFunc)(uint64_t))
+uint64_t hyperloglog(const std::filesystem::path &filepath, uint64_t (*hashFunc)(uint64_t)=hash_3)
 {
     // TODO: implement HyperLogLog here
     auto stream = seqan3::sequence_file_input<my_traits>{filepath};
@@ -80,8 +80,8 @@ uint64_t hyperloglog(const std::filesystem::path &filepath, uint64_t (*hashFunc)
     for(auto & record : stream) {
         for(auto && kmer : record.sequence() | kmer_view) {
             uint64_t hash = hashFunc(kmer);
-            const uint64_t index = register_index(hash, precision);
-            const uint8_t zeros = leading_zeros(hash, precision) + 1;
+            uint64_t index = register_index(hash, precision);
+            uint8_t zeros = leading_zeros(hash, precision) + 1;
             registers[index] = std::max(registers[index], zeros);
         }
     }
@@ -98,7 +98,7 @@ int main(int argc, char** argv)
 {
     // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/celegans.k31.unitigs.fa.ust.fa.gz";
     // const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/human.k31.unitigs.fa.ust.fa.gz";
-    const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz";
+    const std::filesystem::path file = "/Users/adm_js4718fu/datasets/unitigs/ecoli2_k31_ust.fa.gz";
 
     PerformanceTracker tracker;
 
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     tracker.report();
 
     tracker.start();
-    uint64_t count_fm = flajolet_martin(file, hash_3);
+    uint64_t count_fm = flajolet_martin(file);
     uint64_t diff;
     if(count_fm > count_ht)
         diff = count_fm - count_ht;
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
     tracker.report();
 
     tracker.start();
-    uint64_t count_hll = hyperloglog(file, hash_3);
+    uint64_t count_hll = hyperloglog(file);
     if(count_hll > count_ht)
         diff = count_hll - count_ht;
     else

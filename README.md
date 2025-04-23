@@ -70,28 +70,28 @@ Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
 
 #### Algorithm:
 
-- Map each element $x$ to hash $h(x)$,
-- remember the maximum number $l$ of leading 0-bits seen in any $h(x)$,
-- estimate cardinality by $2^l$.
+- Map each element $x$ to hash $h(x)$
+- remember the maximum number $l$ of leading 0-bits seen in any $h(x)$
+- estimate cardinality by $2^l$
 
 TODO:
-- Implement flajolet_martin() in count.cpp.
-- Test flajolet_martin() for different hash functions.
-- Compare run time, space consumption and accuracy to exact solution.
+- Implement flajolet_martin() in count.cpp
+- Compare run time, space consumption and accuracy to exact solution. Use todo.py
+- Test the quality and run time of flajolet_martin() for different hash functions
 
 
 #### Observations:
 
- - Hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements.
+ - Hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements
  - Large Variance
 
 
 ### HyperLogLog
 
 #### Refinement:
-- split $\mathcal{M}$ into $m$ subsets,
-- estimate cardinalities of subsets,
-- return mean.
+- split $\mathcal{M}$ into $m$ subsets
+- estimate cardinalities of subsets
+- return mean
 
 The normalized version of the harmonic mean is the estimate
 ```math
@@ -129,7 +129,7 @@ TODO implement...
 Space linear w.r.t. total number of distinct elements
 
 Comparing $n$ sets requires $O(n^2)$ pairwise comarisons.
-It can be sped up by keeping the hashmaps of k-mer sets of size $O(m)$ in memory at the cost of or $O(n m)$ space.
+Keeping hashmaps of all sets of size $O(m)$ in memory for faster comparison costs $O(n m)$ space.
 
 Impractical for big data.
 

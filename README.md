@@ -154,7 +154,10 @@ How many hash functions do you need to have an expected error at most $.05$?
 
 ### FracMinHashing
 
-<!-- Let FracMinHash $h_{frac}(A) = \min \{ s h(x) \mid x \in A \}$ for $s \in [0,1]$. -->
+Let $h: \Omega \Rightarrow [0,H]$ for $H \in \mathbb{N}$ and $s \in [0,1]$ be a scaling factor. FracMinHash
+```math
+Ffrac_{s}(A) = \min \{ h(x) \mid x \in A h(x) \leq H s \}.
+```
 
 TODO implement...
 

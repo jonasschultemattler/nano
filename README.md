@@ -133,7 +133,7 @@ Comparing $n$ sets requires $O(n^2)$ pairwise comarisons.
 
 ### MinHashing
 
-Let MinHash $h_{\min}(A) = \min \{ h(x) \mid x \in A \}$ and
+Let MinHash $h_{\min}(A) = \min \lbrace h(x) \mid x \in A \rbrace$ and
 ```math
 J_h(A,B) := \begin{cases}1, & \text{if } h_{\min}(A) = h_{\min}(B)\\ 0 & \text{otw.}\end{cases},
 ```

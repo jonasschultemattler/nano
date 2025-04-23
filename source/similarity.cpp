@@ -3,8 +3,7 @@
 #include <seqan3/io/sequence_file/all.hpp>
 #include <seqan3/search/views/kmer_hash.hpp>
 
-// #include <farmhash.h>
-// #include <murmurhash.h>
+#include "hashfunctions.hpp"
 
 
 const std::vector<std::filesystem::path> files = {
@@ -20,34 +19,6 @@ struct my_traits:seqan3::sequence_file_input_default_traits_dna {
 };
 
 
-static inline constexpr uint8_t countleadingzeros(const uint64_t x) {
-    return __builtin_clzll(x);
-}
-
-static inline constexpr uint8_t leading_zeros(const uint64_t hash, const uint8_t precision) {
-    const uint64_t mask = (1ULL << precision) - 1u;
-    const uint8_t rank = std::countl_zero((hash << precision) | mask) + 1;
-    return rank;
-}
-
-static inline constexpr uint8_t register_index(const uint64_t hash, const uint8_t precision) {
-    return hash >> (64 - precision);
-}
-
-static inline constexpr uint64_t hash_1(const uint64_t x) {
-    return x;
-}
-
-static inline constexpr uint64_t hash_2(const uint64_t x) {
-    std::hash<uint64_t> hasher;
-    return hasher(x);
-}
-
-static inline constexpr uint64_t hash_3(const uint64_t x) {
-    __uint128_t result = x;
-    result *= 0x9E3779B97F4A7C15ULL;
-    return static_cast<uint64_t>(result) ^ static_cast<uint64_t>(result >> 64);
-}
 
 const std::vector<uint64_t (*)(const uint64_t)> hashfunctions = {hash_2, hash_3};
 const int number_hf = 2;
@@ -155,7 +126,7 @@ double minHash_similarity(const std::filesystem::path &filepath_a,
     for(int i = 0; i < number_hf; i++)
         y += minhashs_a[i] == minhashs_b[i];
 
-    return y/number_hf;
+    return (double) y/number_hf;
 }
 
 
@@ -168,6 +139,7 @@ double fracMinHash_similarity(const std::filesystem::path &filepath_a,
 }
 
 
+
 int main(int argc, char** argv)
 {
     double matrix[n][n];
@@ -175,5 +147,8 @@ int main(int argc, char** argv)
     print_matrix(matrix);
 
     similarities(files, matrix, minHash_similarity);
+    print_matrix(matrix);
+
+    similarities(files, matrix, fracMinHash_similarity);
     print_matrix(matrix);
 }

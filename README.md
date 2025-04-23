@@ -1,4 +1,4 @@
-# Nano Course - Data Sketching in Biology
+# Nanocourse - Genomic analysis using sketching techniques
 
 
 ## Setup

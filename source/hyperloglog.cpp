@@ -55,9 +55,9 @@ uint64_t hyperloglog(const std::filesystem::path &filepath, uint64_t (*hashFunc)
 
 int main(int argc, char** argv)
 {
-    const std::filesystem::path files[] = {"/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz",
-                                           "/Users/adm_js4718fu/datasets/unitigs/ecoli2_k31_ust.fa.gz",
-                                           "/Users/adm_js4718fu/datasets/unitigs/ecoli4_k31_ust.fa.gz"};
+    const std::filesystem::path files[] = {"data/ecoli1_k31_ust.fa.gz",
+                                           "data/ecoli2_k31_ust.fa.gz",
+                                           "data/ecoli4_k31_ust.fa.gz"};
     for(auto file : files) {
         std::cout << file << '\n';
 

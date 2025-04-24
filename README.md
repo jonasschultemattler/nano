@@ -54,7 +54,7 @@ In an **online** setting (stream)
 
 Using a Hashmap or a Bitvector
 
-TODO implement naive_couting() in count.cpp
+TODO implement naive_couting() in naive_couting.cpp
 
 
 #### Observation:
@@ -81,9 +81,9 @@ Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
 - estimate cardinality by $2^l$
 
 TODO:
-- Implement flajolet_martin() in count.cpp
-- Compare run time and accuracy to exact algorithm. Use todo.py
-- Test the quality and run time of flajolet_martin() for different hash functions
+- Implement flajolet_martin() in flajolet_martin.cpp
+- Compare run time, space consumption, and accuracy to exact algorithm with cmp_count.py
+- Test the quality and run time of flajolet_martin() for different hash functions using cmp_hashs.py
 
 
 #### Observations:
@@ -106,16 +106,15 @@ E:=\frac{\alpha_m m^2}{\sum_{j=1}^m 2^{-M(j)}}.
 for $m$ subsets $M(i)$ and normalization constant $\alpha_m \approx 0.7$.
 
 TODO
-- Implement hyperloglog() in count.cpp.
-- Test hyperloglog() for different hash functions.
-- Compare run time and accuracy to Flajolet-Martin.
+- Implement hyperloglog() in hyperloglog.cpp.
+- Compare run time, space consumption, and accuracy to Flajolet-Martin with cmp_count.py
+- Test hyperloglog() for different hash functions using cmp_hashs.py
 
 
 #### Observations:
 
 - Smaller variance
 - Less space concumption: $O(\log \log n)$
-
 
 
 ## Set Similarity

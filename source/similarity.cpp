@@ -4,6 +4,7 @@
 #include <seqan3/search/views/kmer_hash.hpp>
 
 #include "hashfunctions.hpp"
+#include "perf.hpp"
 
 
 const std::vector<std::filesystem::path> files = {
@@ -69,9 +70,17 @@ double jaccard_similarity(const std::filesystem::path &filepath_a,
     return (double) set_intersection_size(kmerset_a, kmerset_b)/set_union_size(kmerset_a, kmerset_b);
 }
 
+double jaccard_similarity(const std::unordered_set<uint64_t> &kmerset_a,
+                          const std::unordered_set<uint64_t> &kmerset_b)
+{
+    // TODO: implement naive jaccard here
+    return (double) set_intersection_size(kmerset_a, kmerset_b)/set_union_size(kmerset_a, kmerset_b);
+}
+
+
 
 void fill_minhashs(const std::filesystem::path &filepath, uint64_t n, uint64_t minhashs[], uint64_t a[], uint64_t b[], uint64_t prime,
-    uint64_t (*hashFunc)(uint64_t)=hash_3)
+    uint64_t (*hashFunc)(uint64_t)=wyhash)
 {
     for(int i = 0; i < n; i++)
         minhashs[i] = UINT64_MAX;
@@ -97,7 +106,6 @@ double minHash_similarity(const std::filesystem::path &filepath_a,
     const int n = 100;
     uint64_t a[n];
     uint64_t b[n];
-    // std::srand(1);
     for(int i = 0; i < n; i++) {
         a[i] = (1+std::rand()) % prime;
         b[i] = (std::rand()) % prime;
@@ -137,11 +145,22 @@ void similarities(const std::vector<std::filesystem::path> &filepaths, double ma
 {
     for(int i = 0; i < n; i++) {
         matrix[i][i] = 0;
-        // compute feature f_i
         for(int j = i+1; j < n; j++) {
-            // compute feature f_j
-            // compute similarity(feature f_i, feature f_j)
             matrix[i][j] = matrix[j][i] = similarityFunc(filepaths[i], filepaths[j]);
+        }
+    }
+}
+
+void jaccard_similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n])
+{
+    for(int i = 0; i < n; i++) {
+        matrix[i][i] = 0;
+        std::unordered_set<uint64_t> kmerset_i;
+        fill_ht(filepaths[i], kmerset_i);
+        for(int j = i+1; j < n; j++) {
+            std::unordered_set<uint64_t> kmerset_j;
+            fill_ht(filepaths[j], kmerset_j);
+            matrix[i][j] = matrix[j][i] = jaccard_similarity(kmerset_i, kmerset_j);
         }
     }
 }
@@ -150,7 +169,9 @@ void similarities(const std::vector<std::filesystem::path> &filepaths, double ma
 int main(int argc, char** argv)
 {
     double matrix[n][n];
+
     similarities(files, matrix, jaccard_similarity);
+    // jaccard_similarities(files, matrix);
     print_matrix(matrix);
 
     similarities(files, matrix, minHash_similarity);

@@ -8,6 +8,7 @@ Requirements:
  - gcc >= 12 or clang >=17
  - cmake >= 3.20
  - git
+ - python3
 
 Checkout
 ```
@@ -23,9 +24,16 @@ cmake -DCMAKE_BUILD_TYPE=Release .. -D CMAKE_CXX_COMPILER=g++-14
 make
 ```
 
+Create a virtual python environment
+```
+python3 -m venv venv
+source venv/bin/activate
+python3 -m pip install psutil
+```
+
 Test
 ```
-./source/count
+python3 source/cmp_count.py
 ```
 
 ## Sketching
@@ -47,8 +55,6 @@ In an **online** setting (stream)
 Using a Hashmap or a Bitvector
 
 TODO implement naive_couting() in count.cpp
-
-<!-- TODO plot space consumption/number of k-mers in plot.py -->
 
 
 #### Observation:
@@ -76,7 +82,7 @@ Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
 
 TODO:
 - Implement flajolet_martin() in count.cpp
-- Compare run time, space consumption and accuracy to exact solution. Use todo.py
+- Compare run time and accuracy to exact algorithm. Use todo.py
 - Test the quality and run time of flajolet_martin() for different hash functions
 
 
@@ -102,7 +108,7 @@ for $m$ subsets $M(i)$ and normalization constant $\alpha_m \approx 0.7$.
 TODO
 - Implement hyperloglog() in count.cpp.
 - Test hyperloglog() for different hash functions.
-- Compare run time, space consumption and accuracy to Flajolet-Martin.
+- Compare run time and accuracy to Flajolet-Martin.
 
 
 #### Observations:
@@ -156,7 +162,7 @@ for prime number $p$ and random $a_i,b_i \in \lbrace 1,\ldots,p\rbrace$.
 
 TODO:
 - implement...
-- Compare run time, space consumption and accuracy to exact solution. Use todo.py
+- Compare run time and accuracy to exact algorithm. Use todo.py
 - Test the quality and run time of MinHash for different (number of) hash functions
 
 For any $\epsilon > 0$ there is a $k \in O(1/\epsilon^2)$ s.t. the expected error is at most $\epsilon$.
@@ -173,11 +179,7 @@ FRAC_{s}(A) := \min \{ h(x) \mid x \in A \land h(x) \leq H s \}.
 
 TODO
 - implement...
-- plot time, space, gap/solution quality of (Frac)MinHashing
-
-
-### Evaluation
-
+- Compare (Frac)MinHashing run time and accuracy. Use todo.py
 
 
 

@@ -28,14 +28,10 @@ uint64_t naive_couting(const std::filesystem::path &filepath)
 
 int main(int argc, char** argv)
 {
-    const std::filesystem::path files[] = {"data/ecoli1_k31_ust.fa.gz",
-                                           "data/ecoli2_k31_ust.fa.gz",
-                                           "data/ecoli4_k31_ust.fa.gz"};
-    for(auto file : files) {
-        std::cout << file << '\n';
+    const std::filesystem::path file = argv[1];
+    std::cout << file << '\n';
 
-        uint64_t count = naive_couting(file);
-        std::cout << "Distinct kmers: " << count << '\n';
-    }
+    uint64_t count = naive_couting(file);
+    std::cout << "Distinct kmers: " << count << '\n';
 
 }

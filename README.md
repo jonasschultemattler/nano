@@ -28,7 +28,7 @@ Create a virtual python environment
 ```
 python3 -m venv venv
 source venv/bin/activate
-python3 -m pip install psutil
+python3 -m pip install psutil, matplotlib, 
 ```
 
 Test
@@ -59,7 +59,7 @@ TODO implement naive_couting() in naive_couting.cpp
 
 #### Observation:
 
-- Space consumption linear w.r.t. number distinct elements
+- space consumption linear w.r.t. number distinct elements
 - impractical for big data
 
 -> approximate/probabilistic counting
@@ -78,18 +78,22 @@ Let $\mathcal{M}$ be a multiset of uniformly distributed random numbers.
 
 - Map each element $x$ to hash $h(x)$
 - remember the maximum number $l$ of leading 0-bits seen in any $h(x)$
-- estimate cardinality by $2^l$
+- estimate cardinality by $2^l / \Psi$
+
+with normalization constant $\Psi \approx 0.77351$.
 
 TODO:
 - Implement flajolet_martin() in flajolet_martin.cpp
 - Compare run time, space consumption, and accuracy to exact algorithm with cmp_count.py
-- Test the quality and run time of flajolet_martin() for different hash functions using cmp_hashs.py
-
 
 #### Observations:
+ - Large variance! How could you compensate that?
 
- - Hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements
- - Large Variance
+TODO:
+- Test the quality and run time of flajolet_martin() for different (number of) hash functions using cmp_hashs.py
+
+
+Recall that hash $h(x) \rightarrow [0,L]$ requires $\log(L) \approx \log(n)$ space for $n$ distinct elements
 
 
 ### HyperLogLog

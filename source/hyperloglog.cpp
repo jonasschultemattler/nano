@@ -55,14 +55,10 @@ uint64_t hyperloglog(const std::filesystem::path &filepath, uint64_t (*hashFunc)
 
 int main(int argc, char** argv)
 {
-    const std::filesystem::path files[] = {"data/ecoli1_k31_ust.fa.gz",
-                                           "data/ecoli2_k31_ust.fa.gz",
-                                           "data/ecoli4_k31_ust.fa.gz"};
-    for(auto file : files) {
-        std::cout << file << '\n';
+    const std::filesystem::path file = argv[1];
+    std::cout << file << '\n';
 
-        uint64_t count = hyperloglog(file);
-        std::cout << "Distinct kmers: " << count << "\n";
-    }
+    uint64_t count = hyperloglog(file);
+    std::cout << "Distinct kmers: " << count << '\n';
 
 }

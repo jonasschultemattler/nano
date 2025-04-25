@@ -22,14 +22,14 @@ static inline constexpr uint64_t register_index(const uint64_t x, const uint8_t 
 }
 
 
-uint64_t hyperloglog(const std::filesystem::path &filepath, uint64_t (*hashFunc)(uint64_t)=wyhash)
+uint64_t hyperloglog(const std::filesystem::path &filepath, const uint8_t precision=8u, uint64_t (*hashFunc)(uint64_t)=wyhash)
 {
     // TODO: implement HyperLogLog here
     auto stream = seqan3::sequence_file_input<my_traits>{filepath};
     auto kmer_view = seqan3::views::kmer_hash(seqan3::ungapped{k});
 
-    const uint8_t precision = 8u;
-    const uint64_t m = (1<<precision);
+    // const uint8_t precision = 8u;
+    const uint64_t m = (1ULL<<precision);
     // const double alpha = 0.679;
     const double alpha = 0.7213 / (1.0 + 1.079 / m);
 
@@ -38,9 +38,9 @@ uint64_t hyperloglog(const std::filesystem::path &filepath, uint64_t (*hashFunc)
 
     for(auto & record : stream) {
         for(auto && kmer : record.sequence() | kmer_view) {
-            uint64_t hash = hashFunc(kmer);
-            uint64_t index = register_index(hash, precision);
-            uint8_t zeros = leading_zeros(hash, precision) + 1;
+            const uint64_t hash = hashFunc(kmer);
+            const uint64_t index = register_index(hash, precision);
+            const uint8_t zeros = leading_zeros(hash, precision) + 1;
             registers[index] = std::max(registers[index], zeros);
         }
     }
@@ -58,7 +58,15 @@ int main(int argc, char** argv)
     const std::filesystem::path file = argv[1];
     std::cout << file << '\n';
 
-    uint64_t count = hyperloglog(file);
+    uint64_t count;
+    if(argc == 3) {
+        const uint8_t precision = atoi(argv[2]);
+        count = hyperloglog(file, precision);
+    }
+    else {
+        count = hyperloglog(file);
+    }
+    
     std::cout << "Distinct kmers: " << count << '\n';
 
 }

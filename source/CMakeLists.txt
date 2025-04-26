@@ -7,5 +7,8 @@ target_link_libraries (flajoletmartin seqan3::seqan3)
 add_executable(hyperloglog hyperloglog.cpp)
 target_link_libraries (hyperloglog seqan3::seqan3)
 
-add_executable(similarity similarity.cpp)
-target_link_libraries (similarity seqan3::seqan3)
+add_executable(jaccard jaccard.cpp)
+target_link_libraries (jaccard seqan3::seqan3)
+
+add_executable(minhash minhash.cpp)
+target_link_libraries (minhash seqan3::seqan3)

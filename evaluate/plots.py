@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def plot_performance(results, algorithms, file_sizes):
     file_sizes = np.array(file_sizes)/(1024*1024)
     sorted_indices = np.argsort(file_sizes)
@@ -24,22 +25,23 @@ def plot_performance(results, algorithms, file_sizes):
 
 
 def plot_accuracy_FM(results, algorithms):
-    # todo: violinplot error per dataset
-    # todo: hist2d plot truth againt estimate
     fig, ax = plt.subplots(figsize=(5, 4))
-    ax.errorbar(np.arange(results.shape[1])-0.1, results[1,:,2], np.abs(results[0,:,2] - results[1,:,2]), fmt='o', linewidth=2, capsize=6, label="Flajolet Martin")
-    ax.plot(np.arange(results.shape[1]), results[0,:,2], 'kx', label="Ground truth")
+    ax.errorbar(np.arange(results.shape[1]), results[1,:,2], np.abs(results[0,:,2] - results[1,:,2]), fmt='o', linewidth=2, capsize=6, label="Flajolet Martin")
     ax.set_title("Accuracy")
-    ax.legend()
+    ax.set_ylabel("Error")
+    ax.set_xlabel("Dataset")
+    ax.set_xticks(np.arange(results.shape[1]))
+    # ax.legend()
     plt.show()
 
 
 def plot_accuracies(results, algorithms):
-    # todo: violinplot error per dataset
-    # todo: hist2d plot truth againt estimate
     fig, ax = plt.subplots(figsize=(5, 4))
     ax.errorbar(np.arange(results.shape[1])-0.1, results[1,:,2], np.abs(results[0,:,2] - results[1,:,2]), fmt='o', linewidth=2, capsize=6, label="FM")
-    ax.plot(np.arange(results.shape[1]), results[0,:,2], 'kx', label="Ground truth")
     ax.errorbar(np.arange(results.shape[1])+0.1, results[2,:,2], np.abs(results[0,:,2] - results[2,:,2]), fmt='o', linewidth=2, capsize=6, label="HLL")
+    ax.set_title("Accuracy")
+    ax.set_ylabel("Error")
+    ax.set_xlabel("Dataset")
+    ax.set_xticks(np.arange(results.shape[1]))
     ax.legend()
     plt.show()

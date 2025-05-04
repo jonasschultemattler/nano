@@ -70,4 +70,17 @@ def plot_minhash(errors, runtimes, no_permutations):
     ax1.set_title("Runtime")
     ax1.set_ylabel("Time [s]")
     ax1.set_xlabel("Number permutations")
+
+
+def plot_fracminhash(errors, runtimes, scaling_factors):
+    fig, (ax0, ax1) = plt.subplots(1,2, figsize=(8, 3.5))
+    ax0.plot(scaling_factors, errors)
+    ax0.set_title("Accuracy")
+    ax0.set_ylabel("Error")
+    ax0.set_xlabel("scaling factor")
+    ax0.set_ylim(0, 1)
+    ax1.plot(scaling_factors, runtimes)
+    ax1.set_title("Runtime")
+    ax1.set_ylabel("Time [s]")
+    ax1.set_xlabel("scaling factor")
     

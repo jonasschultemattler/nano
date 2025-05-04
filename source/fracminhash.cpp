@@ -87,8 +87,20 @@ void fracminhash_similarities(const std::vector<std::filesystem::path> &filepath
 int main(int argc, char** argv)
 {
     double matrix[n][n];
-    const double s = 0.1;
+    double s = 0.0000000000000001;
+    const int permutations=100;
 
-    fracminhash_similarities(files, matrix);
+    if(argc == 1) {
+        fracminhash_similarities(files, matrix, permutations, s);
+    }
+    else if(argc == 2) {
+        s = std::stod(argv[1]);
+        fracminhash_similarities(files, matrix, permutations, s);
+    }
+    else {
+        std::cout << "usage: optionally provide number of permutations\n";
+        return -1;
+    }
+
     print_matrix(matrix);
 }

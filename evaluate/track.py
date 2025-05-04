@@ -72,7 +72,10 @@ def parse_matrix_output(program_output):
 def track_memory_and_runtime_similarity(executable_path, *args):
     try:
         start_time = time.time()
-        process = subprocess.Popen([executable_path, ''.join(str(arg) for arg in args)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if args:
+            process = subprocess.Popen([executable_path, ''.join(str(arg) for arg in args)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        else:
+            process = subprocess.Popen([executable_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         pid = process.pid
 
         # Monitor memory usage

@@ -15,3 +15,6 @@ target_link_libraries (jaccard_sample seqan3::seqan3)
 
 add_executable(minhash minhash.cpp)
 target_link_libraries (minhash seqan3::seqan3)
+
+add_executable(fracminhash fracminhash.cpp)
+target_link_libraries (fracminhash seqan3::seqan3)

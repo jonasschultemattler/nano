@@ -69,10 +69,10 @@ def parse_matrix_output(program_output):
     return matrix_array
 
     
-def track_memory_and_runtime_similarity(executable_path):
+def track_memory_and_runtime_similarity(executable_path, *args):
     try:
         start_time = time.time()
-        process = subprocess.Popen([executable_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([executable_path, ''.join(str(arg) for arg in args)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         pid = process.pid
 
         # Monitor memory usage
@@ -116,3 +116,5 @@ def track_memory_and_runtime_similarity(executable_path):
         print(f"Error: The executable '{executable_path}' was not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+

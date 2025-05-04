@@ -10,5 +10,8 @@ target_link_libraries (hyperloglog seqan3::seqan3)
 add_executable(jaccard jaccard.cpp)
 target_link_libraries (jaccard seqan3::seqan3)
 
+add_executable(jaccard_sample jaccard_sample.cpp)
+target_link_libraries (jaccard_sample seqan3::seqan3)
+
 add_executable(minhash minhash.cpp)
 target_link_libraries (minhash seqan3::seqan3)

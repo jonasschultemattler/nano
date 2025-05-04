@@ -45,3 +45,29 @@ def plot_accuracies(results, algorithms):
     ax.set_xticks(np.arange(results.shape[1]))
     ax.legend()
     plt.show()
+
+
+def plot_accuracy_runtime(errors, runtimes, probabilities):
+    fig, (ax0, ax1) = plt.subplots(1,2, figsize=(10, 4))
+    ax0.plot(probabilities, errors)
+    ax0.set_title("Accuracy")
+    ax0.set_ylabel("Error")
+    ax0.set_xlabel("Sample Ratio")
+    ax0.set_ylim(0, 1)
+    ax1.plot(probabilities, runtimes)
+    ax1.set_title("Runtime")
+    ax1.set_ylabel("Time [s]")
+    ax1.set_xlabel("Sample Ratio")
+
+def plot_minhash(errors, runtimes, no_permutations):
+    fig, (ax0, ax1) = plt.subplots(1,2, figsize=(8, 3.5))
+    ax0.plot(no_permutations, errors)
+    ax0.set_title("Accuracy")
+    ax0.set_ylabel("Error")
+    ax0.set_xlabel("Number permutations")
+    ax0.set_ylim(0, 1)
+    ax1.plot(no_permutations, runtimes)
+    ax1.set_title("Runtime")
+    ax1.set_ylabel("Time [s]")
+    ax1.set_xlabel("Number permutations")
+    

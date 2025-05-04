@@ -53,17 +53,18 @@ static size_t set_union_size(const std::unordered_set<uint64_t> &set_a,
 
 
 void fill_ht(const std::filesystem::path &filepath,
-             std::unordered_set<uint64_t> &kmerset)
+             std::unordered_set<uint64_t> &kmerset, const double percentage)
 {
-    // stream over k-mers in DNA file
     auto stream = seqan3::sequence_file_input<my_traits>{filepath};
     auto kmer_view = seqan3::views::kmer_hash(seqan3::ungapped{k});
     for(auto & record : stream) {
         for(auto && kmer : record.sequence() | kmer_view) {
-            kmerset.insert(kmer);
+            if((double) std::rand()/RAND_MAX <= percentage)
+                kmerset.insert(kmer);
         }
     }
 }
+
 
 double jaccard_similarity(const std::unordered_set<uint64_t> &kmerset_a,
                           const std::unordered_set<uint64_t> &kmerset_b)
@@ -73,15 +74,15 @@ double jaccard_similarity(const std::unordered_set<uint64_t> &kmerset_a,
 }
 
 
-void jaccard_similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n])
+void jaccard_similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n], const double percentage)
 {
     for(int i = 0; i < n; i++) {
         matrix[i][i] = 0;
         std::unordered_set<uint64_t> kmerset_i;
-        fill_ht(filepaths[i], kmerset_i);
+        fill_ht(filepaths[i], kmerset_i, percentage);
         for(int j = i+1; j < n; j++) {
             std::unordered_set<uint64_t> kmerset_j;
-            fill_ht(filepaths[j], kmerset_j);
+            fill_ht(filepaths[j], kmerset_j, percentage);
             matrix[i][j] = matrix[j][i] = jaccard_similarity(kmerset_i, kmerset_j);
         }
     }
@@ -90,8 +91,13 @@ void jaccard_similarities(const std::vector<std::filesystem::path> &filepaths, d
 
 int main(int argc, char** argv)
 {
+    if(argc != 2) {
+        std::cout << "usage: provide sample probability in [0,1]\n";
+        return -1;
+    }
+    double percentage = std::stod(argv[1]);
     double matrix[n][n];
 
-    jaccard_similarities(files, matrix);
+    jaccard_similarities(files, matrix, percentage);
     print_matrix(matrix);
 }

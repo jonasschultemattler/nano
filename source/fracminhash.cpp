@@ -1,20 +1,11 @@
-#include <seqan3/io/sequence_file/all.hpp>
-#include <seqan3/search/views/kmer_hash.hpp>
-
-#include "hashfunctions.hpp"
-
+#include "hyperloglog.hpp"
 
 const std::vector<std::filesystem::path> files = {
         "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz",
         "/Users/adm_js4718fu/datasets/unitigs/ecoli2_k31_ust.fa.gz",
         "/Users/adm_js4718fu/datasets/unitigs/ecoli4_k31_ust.fa.gz"};
 const int n = 3;
-const uint8_t k = 31;
 
-
-struct my_traits:seqan3::sequence_file_input_default_traits_dna {
-    using sequence_alphabet = seqan3::dna4;
-};
 
 void print_matrix(double matrix[n][n]) {
     for(int i = 0; i < n; i++) {
@@ -25,60 +16,56 @@ void print_matrix(double matrix[n][n]) {
     }
 }
 
+static double jaccard(const double containment, const uint64_t size_a, const uint64_t size_b) {
+    return containment*size_a/(size_a+size_b-containment*size_a);
+}
 
-void fill_fracminhashs(const std::filesystem::path &filepath, uint64_t n, uint64_t minhashs[],
-    uint64_t a[], uint64_t b[], uint64_t prime, const double s,
-    uint64_t (*hashFunc)(uint64_t)=wyhash)
+
+void fracminsketch(const std::filesystem::path &filepath, std::vector<uint64_t> &frac_sketch,
+                   const double s, uint64_t (*hashFunc)(uint64_t)=wyhash)
 {
-    for(int i = 0; i < n; i++)
-        minhashs[i] = UINT64_MAX;
-
+    // TODO: implement FracMinSketch here
     auto fin = seqan3::sequence_file_input<my_traits>{filepath};
     auto kmer_view = seqan3::views::kmer_hash(seqan3::ungapped{k});
     for(auto & record : fin) {
         for(auto && kmer : record.sequence() | kmer_view) {
             uint64_t hash = hashFunc(kmer);
-            for(int i = 0; i < n; i++) {
-                uint64_t hash_i = (hash*a[i]+b[i])%prime;
-                if(hash_i <= UINT64_MAX*s)
-                    minhashs[i] = std::min(hash_i, minhashs[i]);
-            }
+            if(hash <= UINT64_MAX*s)
+                frac_sketch.push_back(hash);
         }
     }
+    std::sort(frac_sketch.begin(), frac_sketch.end());
 }
 
 
-double fracMinHash_similarity(const std::filesystem::path &filepath_a, const std::filesystem::path &filepath_b,
-                              const int permutations=100, const double s=0.1)
+double fracMinHash(const std::vector<uint64_t> &frac_sketch_a, const std::vector<uint64_t> &frac_sketch_b, const uint64_t size_a,
+                   const double s)
 {
-    // TODO: implement MinHashing here
-    const uint64_t prime = (1 << 61) - 1;
-    uint64_t a[permutations];
-    uint64_t b[permutations];
-    for(int i = 0; i < permutations; i++) {
-        a[i] = (1+std::rand()) % prime;
-        b[i] = (std::rand()) % prime;
-    }
-    uint64_t minhashs_a[permutations];
-    uint64_t minhashs_b[permutations];
-    fill_fracminhashs(filepath_a, permutations, minhashs_a, a, b, prime, s);
-    fill_fracminhashs(filepath_b, permutations, minhashs_b, a, b, prime, s);
-
-    int y = 0;
-    for(int i = 0; i < permutations; i++)
-        y += minhashs_a[i] == minhashs_b[i];
-
-    return (double) y/permutations;
+    // TODO: implement FracMinHashing here
+    std::vector<uint64_t> intersection;
+    std::set_intersection(frac_sketch_a.begin(), frac_sketch_a.end(), frac_sketch_b.begin(),
+                          frac_sketch_b.end(), back_inserter(intersection));
+    
+    return (double) intersection.size()/(frac_sketch_a.size()*(1-std::pow(1-s, size_a)));
 }
 
 
 void fracminhash_similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n],
-    const int permutations=100, const double s=0.1)
+    const double s=0.1)
 {
+    uint64_t sizes[n];
     for(int i = 0; i < n; i++) {
-        matrix[i][i] = 0;
+        sizes[i] = hyperloglog(filepaths[i]);
+    }
+    for(int i = 0; i < n; i++) {
+        matrix[i][i] = 1;
+        std::vector<uint64_t> fracsketch_i;
+        fracminsketch(filepaths[i], fracsketch_i, s);
         for(int j = i+1; j < n; j++) {
-            matrix[i][j] = matrix[j][i] = fracMinHash_similarity(filepaths[i], filepaths[j], permutations, s);
+            std::vector<uint64_t> fracsketch_j;
+            fracminsketch(filepaths[j], fracsketch_j, s);
+            const double containment = fracMinHash(fracsketch_i, fracsketch_j, sizes[i], s);
+            matrix[i][j] = matrix[j][i] = jaccard(containment, sizes[i], sizes[j]);
         }
     }
 }
@@ -87,18 +74,16 @@ void fracminhash_similarities(const std::vector<std::filesystem::path> &filepath
 int main(int argc, char** argv)
 {
     double matrix[n][n];
-    double s = 0.0000000000000001;
-    const int permutations=100;
 
     if(argc == 1) {
-        fracminhash_similarities(files, matrix, permutations, s);
+        fracminhash_similarities(files, matrix);
     }
     else if(argc == 2) {
-        s = std::stod(argv[1]);
-        fracminhash_similarities(files, matrix, permutations, s);
+        double s = std::stod(argv[1]);
+        fracminhash_similarities(files, matrix, s);
     }
     else {
-        std::cout << "usage: optionally provide number of permutations\n";
+        std::cout << "usage: optionally provide scaling factor\n";
         return -1;
     }
 

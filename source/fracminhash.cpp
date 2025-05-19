@@ -1,10 +1,11 @@
 #include "hyperloglog.hpp"
 
 const std::vector<std::filesystem::path> files = {
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz",
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli2_k31_ust.fa.gz",
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli4_k31_ust.fa.gz"};
-const int n = 3;
+        "data/ecoli1_k31_ust.fa.gz",
+        "data/ecoli2_k31_ust.fa.gz",
+        "data/ecoli4_k31_ust.fa.gz",
+        "data/salmonella_100_k31_ust.fa.gz"};
+const int n = 4;
 
 
 void print_matrix(double matrix[n][n]) {

@@ -32,7 +32,8 @@ uint64_t hyperloglog(const std::filesystem::path &filepath, const uint8_t precis
     // const double alpha = 0.679;
     const double alpha = 0.7213 / (1.0 + 1.079 / m);
 
-    uint8_t registers[m];
+    // uint8_t registers[m];
+    uint8_t* registers = new uint8_t[m];
     std::memset(registers, 0, m*sizeof(uint8_t));
 
     for(auto & record : stream) {
@@ -47,6 +48,8 @@ uint64_t hyperloglog(const std::filesystem::path &filepath, const uint8_t precis
     for(uint64_t j=0; j < m; ++j) {
         sum += 1.0 / (1ULL << registers[j]);
     }
+
+    delete[] registers;
 
     return alpha*m*m/sum;
 }

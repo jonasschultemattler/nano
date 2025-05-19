@@ -5,11 +5,15 @@
 
 
 const std::vector<std::filesystem::path> files = {
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz",
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli2_k31_ust.fa.gz",
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli4_k31_ust.fa.gz"};
-const int n = 3;
+        "data/ecoli1_k31_ust.fa.gz",
+        "data/ecoli2_k31_ust.fa.gz",
+        "data/ecoli4_k31_ust.fa.gz",
+        "data/salmonella_100_k31_ust.fa.gz"};
+const int n = 4;
 const uint8_t k = 31;
+
+const uint64_t prime = (1UL << 61) - 1;
+const int seed = 1;
 
 
 struct my_traits:seqan3::sequence_file_input_default_traits_dna {
@@ -25,11 +29,11 @@ void print_matrix(double matrix[n][n]) {
     }
 }
 
-
-void fill_minhashs(const std::filesystem::path &filepath, uint64_t n, uint64_t minhashs[], uint64_t a[], uint64_t b[], uint64_t prime,
-    uint64_t (*hashFunc)(uint64_t)=wyhash)
+void minhash_sketch(const std::filesystem::path &filepath, uint64_t permutations, uint64_t minhashs[],
+                    const uint64_t a[], const uint64_t b[], uint64_t (*hashFunc)(uint64_t))
 {
-    for(int i = 0; i < n; i++)
+    // TODO: implement MinHashSketch here
+    for(int i = 0; i < permutations; i++)
         minhashs[i] = UINT64_MAX;
 
     auto fin = seqan3::sequence_file_input<my_traits>{filepath};
@@ -37,30 +41,17 @@ void fill_minhashs(const std::filesystem::path &filepath, uint64_t n, uint64_t m
     for(auto & record : fin) {
         for(auto && kmer : record.sequence() | kmer_view) {
             uint64_t hash = hashFunc(kmer);
-            for(int i = 0; i < n; i++) {
-                minhashs[i] = std::min((hash*a[i]+b[i])%prime, minhashs[i]);
+            for(int i = 0; i < permutations; i++) {
+                minhashs[i] = std::min((hash*a[i]+b[i]) % prime, minhashs[i]);
             }
         }
     }
 }
 
 
-double minhash_similarity(const std::filesystem::path &filepath_a,
-                          const std::filesystem::path &filepath_b, const int permutations=100)
+double minhash_similarity(const uint64_t minhashs_a[], const uint64_t minhashs_b[], const int permutations)
 {
     // TODO: implement MinHashing here
-    const uint64_t prime = (1 << 61) - 1;
-    uint64_t a[permutations];
-    uint64_t b[permutations];
-    for(int i = 0; i < permutations; i++) {
-        a[i] = (1+std::rand()) % prime;
-        b[i] = (std::rand()) % prime;
-    }
-    uint64_t minhashs_a[permutations];
-    uint64_t minhashs_b[permutations];
-    fill_minhashs(filepath_a, permutations, minhashs_a, a, b, prime);
-    fill_minhashs(filepath_b, permutations, minhashs_b, a, b, prime);
-
     int y = 0;
     for(int i = 0; i < permutations; i++)
         y += minhashs_a[i] == minhashs_b[i];
@@ -68,12 +59,25 @@ double minhash_similarity(const std::filesystem::path &filepath_a,
     return (double) y/permutations;
 }
 
-void minhash_similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n], const int permutations=100)
+
+void minhash_similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n],
+    const int permutations=100, uint64_t (*hashFunc)(uint64_t)=wyhash) 
 {
+    uint64_t a[permutations];
+    uint64_t b[permutations];
+    for(int i = 0; i < permutations; i++) {
+        a[i] = (1+std::rand()) % prime;
+        b[i] = std::rand() % prime;
+    }
+
     for(int i = 0; i < n; i++) {
-        matrix[i][i] = 0;
+        matrix[i][i] = 1;
+        uint64_t minhashs_i[permutations];
+        minhash_sketch(filepaths[i], permutations, minhashs_i, a, b, hashFunc);
         for(int j = i+1; j < n; j++) {
-            matrix[i][j] = matrix[j][i] = minhash_similarity(filepaths[i], filepaths[j], permutations);
+            uint64_t minhashs_j[permutations];
+            minhash_sketch(filepaths[j], permutations, minhashs_j, a, b, hashFunc);
+            matrix[i][j] = matrix[j][i] = minhash_similarity(minhashs_i, minhashs_j, permutations);
         }
     }
 }
@@ -90,8 +94,19 @@ int main(int argc, char** argv)
         const int permutations = std::stoi(argv[1]);
         minhash_similarities(files, matrix, permutations);
     }
+    else if(argc == 3) {
+        const int permutations = std::stoi(argv[1]);
+        if(std::string(argv[2]) == "stdhash")
+            minhash_similarities(files, matrix, permutations, stdhash);
+        else if(std::string(argv[2]) == "wyhash")
+            minhash_similarities(files, matrix, permutations, wyhash);
+        else if(std::string(argv[2]) == "farmhash")
+            minhash_similarities(files, matrix, permutations, farmhash);
+        else
+            std::cout << "no such hash function\n";
+    }
     else {
-        std::cout << "usage: optionally provide number of permutations\n";
+        std::cout << "usage: optionally provide number of permutations and hash function\n";
         return -1;
     }
     

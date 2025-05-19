@@ -59,17 +59,34 @@ def plot_accuracy_runtime(errors, runtimes, probabilities):
     ax1.set_ylabel("Time [s]")
     ax1.set_xlabel("Sample Ratio")
 
-def plot_minhash(errors, runtimes, no_permutations):
+def plot_minhash(errors, runtimes, permutations):
     fig, (ax0, ax1) = plt.subplots(1,2, figsize=(8, 3.5))
-    ax0.plot(no_permutations, errors)
+    ax0.plot(permutations, errors)
     ax0.set_title("Accuracy")
     ax0.set_ylabel("Error")
     ax0.set_xlabel("Number permutations")
     ax0.set_ylim(0, 1)
-    ax1.plot(no_permutations, runtimes)
+    ax1.plot(permutations, runtimes)
     ax1.set_title("Runtime")
     ax1.set_ylabel("Time [s]")
     ax1.set_xlabel("Number permutations")
+
+
+def plot_minhashs(hashfunctions, errors, runtimes, permutations):
+    fig, (ax0, ax1) = plt.subplots(1,2, figsize=(8, 3.5))
+    for hashfunction in hashfunctions:
+        ax0.plot(permutations, errors[hashfunction], label=hashfunction)
+    ax0.set_title("Accuracy")
+    ax0.set_ylabel("Error")
+    ax0.set_xlabel("Number permutations")
+    ax0.set_ylim(0, 1)
+    ax0.legend()
+    for hashfunction in hashfunctions:
+        ax1.plot(permutations, runtimes[hashfunction], label=hashfunction)
+    ax1.set_title("Runtime")
+    ax1.set_ylabel("Time [s]")
+    ax1.set_xlabel("Number permutations")
+    ax1.legend()
 
 
 def plot_fracminhash(errors, runtimes, scaling_factors):
@@ -83,4 +100,6 @@ def plot_fracminhash(errors, runtimes, scaling_factors):
     ax1.set_title("Runtime")
     ax1.set_ylabel("Time [s]")
     ax1.set_xlabel("scaling factor")
+
+
     

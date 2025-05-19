@@ -7,10 +7,11 @@
 
 
 const std::vector<std::filesystem::path> files = {
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli1_k31_ust.fa.gz",
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli2_k31_ust.fa.gz",
-        "/Users/adm_js4718fu/datasets/unitigs/ecoli4_k31_ust.fa.gz"};
-const int n = 3;
+        "data/ecoli1_k31_ust.fa.gz",
+        "data/ecoli2_k31_ust.fa.gz",
+        "data/ecoli4_k31_ust.fa.gz",
+        "data/salmonella_100_k31_ust.fa.gz"};
+const int n = 4;
 const uint8_t k = 31;
 
 
@@ -77,7 +78,7 @@ double jaccard_similarity(const std::unordered_set<uint64_t> &kmerset_a,
 void jaccard_similarities(const std::vector<std::filesystem::path> &filepaths, double matrix[n][n], const double percentage)
 {
     for(int i = 0; i < n; i++) {
-        matrix[i][i] = 0;
+        matrix[i][i] = 1;
         std::unordered_set<uint64_t> kmerset_i;
         fill_ht(filepaths[i], kmerset_i, percentage);
         for(int j = i+1; j < n; j++) {
